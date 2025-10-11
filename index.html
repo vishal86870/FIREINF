@@ -1,0 +1,1568 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Customer Management System</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        :root {
+            --primary: #3498db;
+            --secondary: #2c3e50;
+            --success: #2ecc71;
+            --danger: #e74c3c;
+            --warning: #f39c12;
+            --info: #17a2b8;
+            --light: #f8f9fa;
+            --dark: #343a40;
+        }
+
+        body {
+            background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+            color: #333;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 1200px;
+            background-color: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(to right, var(--secondary), #4a6491);
+            color: white;
+            padding: 20px;
+            text-align: center;
+            position: relative;
+        }
+
+        .header h1 {
+            font-size: 2.2rem;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        .login-toggle {
+            display: flex;
+            justify-content: center;
+            margin-top: 15px;
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 30px;
+            padding: 5px;
+            width: 300px;
+            margin: 15px auto 0;
+        }
+
+        .toggle-btn {
+            padding: 8px 20px;
+            border: none;
+            background: transparent;
+            color: white;
+            border-radius: 30px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            flex: 1;
+        }
+
+        .toggle-btn.active {
+            background-color: var(--primary);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        .content {
+            display: flex;
+            min-height: 600px;
+        }
+
+        .login-section, .admin-panel, .customer-panel {
+            flex: 1;
+            padding: 30px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .login-section {
+            background: linear-gradient(to bottom right, #f8f9fa, #e9ecef);
+            justify-content: center;
+            align-items: center;
+        }
+
+        .admin-panel, .customer-panel {
+            display: none;
+        }
+
+        .login-form {
+            width: 100%;
+            max-width: 400px;
+            background-color: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .login-form h2 {
+            text-align: center;
+            margin-bottom: 25px;
+            color: var(--secondary);
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: var(--secondary);
+        }
+
+        .form-group input, .form-group select, .form-group textarea {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+            transition: border 0.3s;
+        }
+
+        .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+            border-color: var(--primary);
+            outline: none;
+        }
+
+        .login-btn {
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(to right, var(--primary), var(--secondary));
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .login-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .forgot-password {
+            text-align: center;
+            margin-top: 15px;
+        }
+
+        .forgot-password a {
+            color: var(--primary);
+            text-decoration: none;
+            font-size: 14px;
+        }
+
+        .forgot-password a:hover {
+            text-decoration: underline;
+        }
+
+        .demo-credentials {
+            margin-top: 15px;
+            text-align: center;
+            font-size: 14px;
+            color: #7f8c8d;
+            background-color: #f8f9fa;
+            padding: 10px;
+            border-radius: 5px;
+        }
+
+        .panel-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .panel-header h2 {
+            color: var(--secondary);
+        }
+
+        .logout-btn {
+            background-color: var(--danger);
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .stats-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 25px;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            border-top: 4px solid var(--primary);
+        }
+
+        .stat-card h3 {
+            font-size: 14px;
+            color: #7f8c8d;
+            margin-bottom: 10px;
+        }
+
+        .stat-card p {
+            font-size: 24px;
+            font-weight: bold;
+            color: var(--secondary);
+        }
+
+        .search-actions {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .search-box {
+            flex: 1;
+            min-width: 250px;
+            position: relative;
+        }
+
+        .search-box input {
+            width: 100%;
+            padding: 12px 15px 12px 40px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+
+        .search-box i {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #7f8c8d;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s;
+        }
+
+        .btn-primary {
+            background-color: var(--primary);
+            color: white;
+        }
+
+        .btn-success {
+            background-color: var(--success);
+            color: white;
+        }
+
+        .btn-danger {
+            background-color: var(--danger);
+            color: white;
+        }
+
+        .btn-warning {
+            background-color: var(--warning);
+            color: white;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .table-container {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            margin-bottom: 20px;
+            flex: 1;
+            overflow-y: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        thead {
+            background-color: #34495e;
+            color: white;
+        }
+
+        th, td {
+            padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+
+        th {
+            font-weight: 600;
+        }
+
+        tbody tr:hover {
+            background-color: #f9f9f9;
+        }
+
+        .action-cell {
+            display: flex;
+            gap: 8px;
+        }
+
+        .action-btn {
+            padding: 6px 10px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .btn-edit {
+            background-color: var(--warning);
+            color: white;
+        }
+
+        .btn-delete {
+            background-color: var(--danger);
+            color: white;
+        }
+
+        .btn-view {
+            background-color: var(--primary);
+            color: white;
+        }
+
+        .pagination {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .pagination-info {
+            color: #7f8c8d;
+        }
+
+        .pagination-controls {
+            display: flex;
+            gap: 10px;
+        }
+
+        .pagination-btn {
+            padding: 8px 15px;
+            border: 1px solid #ddd;
+            background-color: white;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .pagination-btn.active {
+            background-color: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+
+        .customer-info {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            padding: 25px;
+            margin-bottom: 20px;
+        }
+
+        .customer-info h3 {
+            color: var(--secondary);
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 15px;
+        }
+
+        .info-item {
+            margin-bottom: 15px;
+        }
+
+        .info-item label {
+            font-weight: 600;
+            color: #7f8c8d;
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        .info-item span {
+            color: var(--secondary);
+            font-size: 16px;
+        }
+
+        .customer-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            background-color: white;
+            border-radius: 8px;
+            width: 500px;
+            max-width: 90%;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            padding: 15px 20px;
+            border-bottom: 1px solid #e0e0e0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-header h3 {
+            color: var(--secondary);
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 20px;
+            cursor: pointer;
+            color: #7f8c8d;
+        }
+
+        .modal-body {
+            padding: 20px;
+        }
+
+        .modal-footer {
+            padding: 15px 20px;
+            border-top: 1px solid #e0e0e0;
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+        }
+
+        .passport-preview {
+            width: 150px;
+            height: 150px;
+            border: 1px dashed #ddd;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 15px;
+            background-color: #f8f9fa;
+            border-radius: 5px;
+        }
+
+        .passport-preview img {
+            max-width: 100%;
+            max-height: 100%;
+            display: none;
+        }
+
+        .status-badge {
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .status-active {
+            background-color: #d4edda;
+            color: #155724;
+        }
+
+        .status-inactive {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+
+        .status-pending {
+            background-color: #fff3cd;
+            color: #856404;
+        }
+
+        @media (max-width: 992px) {
+            .content {
+                flex-direction: column;
+            }
+            
+            .login-section, .admin-panel, .customer-panel {
+                width: 100%;
+            }
+            
+            .search-actions {
+                flex-direction: column;
+            }
+            
+            .search-box {
+                min-width: 100%;
+            }
+            
+            .action-buttons {
+                width: 100%;
+                justify-content: space-between;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Customer Management System</h1>
+            <p>Manage your customers efficiently with our powerful admin panel</p>
+            <div class="login-toggle">
+                <button class="toggle-btn active" id="adminToggle">Admin Login</button>
+                <button class="toggle-btn" id="customerToggle">Customer Login</button>
+            </div>
+        </div>
+        
+        <div class="content">
+            <!-- Admin Login Section -->
+            <div class="login-section" id="adminLoginSection">
+                <div class="login-form">
+                    <h2>Admin Login</h2>
+                    <div class="form-group">
+                        <label for="adminUsername">Username</label>
+                        <input type="text" id="adminUsername" placeholder="Enter admin username">
+                    </div>
+                    <div class="form-group">
+                        <label for="adminPassword">Password</label>
+                        <input type="password" id="adminPassword" placeholder="Enter admin password">
+                    </div>
+                    <button class="login-btn" id="adminLoginBtn">Login as Admin</button>
+                    <div class="forgot-password">
+                        <a href="#" id="adminForgotPassword">Forgot Password?</a>
+                    </div>
+                    <div class="demo-credentials">
+                        Demo: admin / admin123
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Customer Login Section -->
+            <div class="login-section" id="customerLoginSection" style="display: none;">
+                <div class="login-form">
+                    <h2>Customer Login</h2>
+                    <div class="form-group">
+                        <label for="customerId">Customer ID</label>
+                        <input type="text" id="customerId" placeholder="Enter your customer ID">
+                    </div>
+                    <div class="form-group">
+                        <label for="customerPassword">Password</label>
+                        <input type="password" id="customerPassword" placeholder="Enter your password">
+                    </div>
+                    <button class="login-btn" id="customerLoginBtn">Login as Customer</button>
+                    <div class="forgot-password">
+                        <a href="#" id="customerForgotPassword">Forgot Password?</a>
+                    </div>
+                    <div class="demo-credentials">
+                        Demo: 1001 / customer123
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Admin Panel -->
+            <div class="admin-panel" id="adminPanel">
+                <div class="panel-header">
+                    <h2>Admin Dashboard</h2>
+                    <button class="logout-btn" id="adminLogoutBtn">
+                        <i class="fas fa-sign-out-alt"></i> Logout
+                    </button>
+                </div>
+                
+                <div class="stats-cards">
+                    <div class="stat-card">
+                        <h3>Total Customers</h3>
+                        <p id="totalCustomers">10,247</p>
+                    </div>
+                    <div class="stat-card">
+                        <h3>Total Amount</h3>
+                        <p id="totalAmount">$2,847,320</p>
+                    </div>
+                    <div class="stat-card">
+                        <h3>Active Customers</h3>
+                        <p id="activeCustomers">8,542</p>
+                    </div>
+                    <div class="stat-card">
+                        <h3>New This Month</h3>
+                        <p id="newCustomers">324</p>
+                    </div>
+                </div>
+                
+                <div class="search-actions">
+                    <div class="search-box">
+                        <i class="fas fa-search"></i>
+                        <input type="text" id="searchInput" placeholder="Search customers by name, email, or phone...">
+                    </div>
+                    <div class="action-buttons">
+                        <button class="btn btn-primary" id="addCustomerBtn">
+                            <i class="fas fa-plus"></i> Add Customer
+                        </button>
+                        <button class="btn btn-success" id="exportNotepadBtn">
+                            <i class="fas fa-file-alt"></i> Export to Notepad
+                        </button>
+                        <button class="btn btn-success" id="exportExcelBtn">
+                            <i class="fas fa-file-excel"></i> Export to Excel
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Name</th>
+                                <th>Mobile Number</th>
+                                <th>Email ID</th>
+                                <th>Amount</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="customerTableBody">
+                            <!-- Customer data will be populated here -->
+                        </tbody>
+                    </table>
+                </div>
+                
+                <div class="pagination">
+                    <div class="pagination-info">
+                        Showing <span id="startRecord">1</span> to <span id="endRecord">10</span> of <span id="totalRecords">10,247</span> entries
+                    </div>
+                    <div class="pagination-controls">
+                        <button class="pagination-btn" id="prevPage"><i class="fas fa-chevron-left"></i> Previous</button>
+                        <button class="pagination-btn active">1</button>
+                        <button class="pagination-btn">2</button>
+                        <button class="pagination-btn">3</button>
+                        <button class="pagination-btn">4</button>
+                        <button class="pagination-btn">5</button>
+                        <button class="pagination-btn" id="nextPage">Next <i class="fas fa-chevron-right"></i></button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Customer Panel -->
+            <div class="customer-panel" id="customerPanel">
+                <div class="panel-header">
+                    <h2>My Account</h2>
+                    <button class="logout-btn" id="customerLogoutBtn">
+                        <i class="fas fa-sign-out-alt"></i> Logout
+                    </button>
+                </div>
+                
+                <div class="customer-info">
+                    <h3>Personal Information</h3>
+                    <div class="info-grid">
+                        <div class="info-item">
+                            <label>Customer ID</label>
+                            <span id="custId">1001</span>
+                        </div>
+                        <div class="info-item">
+                            <label>Full Name</label>
+                            <span id="custName">John Smith</span>
+                        </div>
+                        <div class="info-item">
+                            <label>Mobile Number</label>
+                            <span id="custMobile">+1-555-123-4567</span>
+                        </div>
+                        <div class="info-item">
+                            <label>Email ID</label>
+                            <span id="custEmail">john.smith@example.com</span>
+                        </div>
+                        <div class="info-item">
+                            <label>Account Balance</label>
+                            <span id="custAmount">$2,450.00</span>
+                        </div>
+                        <div class="info-item">
+                            <label>Account Status</label>
+                            <span id="custStatus">Active</span>
+                        </div>
+                        <div class="info-item">
+                            <label>Member Since</label>
+                            <span id="custJoinDate">January 15, 2022</span>
+                        </div>
+                        <div class="info-item">
+                            <label>Last Login</label>
+                            <span id="custLastLogin">Today, 10:30 AM</span>
+                        </div>
+                    </div>
+                    
+                    <div class="customer-actions">
+                        <button class="btn btn-primary" id="editProfileBtn">
+                            <i class="fas fa-edit"></i> Edit Profile
+                        </button>
+                        <button class="btn btn-warning" id="changePasswordBtn">
+                            <i class="fas fa-key"></i> Change Password
+                        </button>
+                        <button class="btn btn-primary" id="uploadPassportBtn">
+                            <i class="fas fa-passport"></i> Upload Passport
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="customer-info">
+                    <h3>Recent Transactions</h3>
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Description</th>
+                                    <th>Amount</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>2023-10-15</td>
+                                    <td>Online Purchase - Electronics</td>
+                                    <td>$245.00</td>
+                                    <td>Completed</td>
+                                </tr>
+                                <tr>
+                                    <td>2023-10-10</td>
+                                    <td>Payment Received</td>
+                                    <td>$500.00</td>
+                                    <td>Completed</td>
+                                </tr>
+                                <tr>
+                                    <td>2023-10-05</td>
+                                    <td>Service Subscription</td>
+                                    <td>$29.99</td>
+                                    <td>Completed</td>
+                                </tr>
+                                <tr>
+                                    <td>2023-09-28</td>
+                                    <td>Online Purchase - Clothing</td>
+                                    <td>$89.50</td>
+                                    <td>Completed</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add/Edit Customer Modal -->
+    <div id="customerModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="modalTitle">Add Customer</h3>
+                <button class="close-btn" id="closeModal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="customerForm">
+                    <div class="form-group">
+                        <label for="customerName">Full Name</label>
+                        <input type="text" id="customerName" >
+                    </div>
+                    <div class="form-group">
+                        <label for="customerMobile">Mobile Number</label>
+                        <input type="text" id="customerMobile" >
+                    </div>
+                    <div class="form-group">
+                        <label for="customerEmail">Email ID</label>
+                        <input type="email" id="customerEmail" >
+                    </div>
+                    <div class="form-group">
+                        <label for="customerAmount">Amount</label>
+                        <input type="number" id="customerAmount" >
+                    </div>
+                    <div class="form-group">
+                        <label for="customerPassword">Password</label>
+                        <input type="password" id="customerPassword" >
+                    </div>
+                    <div class="form-group">
+                        <label for="customerStatus">Status</label>
+                        <select id="customerStatus">
+                            <option value="Active">Active</option>
+                            <option value="Inactive">Inactive</option>
+                            <option value="Pending">Pending</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="customerAddress">Address</label>
+                        <textarea id="customerAddress" rows="3"></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-danger" id="cancelBtn">Cancel</button>
+                <button class="btn btn-success" id="saveCustomerBtn">Save Customer</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Change Password Modal -->
+    <div id="changePasswordModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Change Password</h3>
+                <button class="close-btn" id="closeChangePasswordModal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="changePasswordForm">
+                    <div class="form-group">
+                        <label for="currentPassword">Current Password</label>
+                        <input type="password" id="currentPassword" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="newPassword">New Password</label>
+                        <input type="password" id="newPassword" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="confirmPassword">Confirm New Password</label>
+                        <input type="password" id="confirmPassword" required>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-danger" id="cancelChangePasswordBtn">Cancel</button>
+                <button class="btn btn-success" id="savePasswordBtn">Change Password</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Upload Passport Modal -->
+    <div id="uploadPassportModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Upload Passport Photo</h3>
+                <button class="close-btn" id="closeUploadPassportModal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="passport-preview">
+                    <img id="passportPreview" src="" alt="Passport Preview">
+                    <span id="noPassportText">No passport uploaded</span>
+                </div>
+                <form id="uploadPassportForm">
+                    <div class="form-group">
+                        <label for="passportFile">Select Passport Image</label>
+                        <input type="file" id="passportFile" accept="image/*">
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-danger" id="cancelUploadPassportBtn">Cancel</button>
+                <button class="btn btn-success" id="uploadPassportBtnModal">Upload Passport</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Forgot Password Modal -->
+    <div id="forgotPasswordModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="forgotPasswordTitle">Forgot Password</h3>
+                <button class="close-btn" id="closeForgotPasswordModal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="forgotPasswordForm">
+                    <div class="form-group">
+                        <label id="forgotPasswordLabel">Enter your email address</label>
+                        <input type="text" id="forgotPasswordInput" required>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-danger" id="cancelForgotPasswordBtn">Cancel</button>
+                <button class="btn btn-success" id="submitForgotPasswordBtn">Submit</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Sample customer data (in a real application, this would come from a database)
+        let customers = [];
+        let currentUser = null;
+        let isAdminForgotPassword = false;
+        
+        // Generate 10,000+ sample customers
+        function generateSampleCustomers() {
+       
+            // Add some specific customers for demo purposes
+            customers.push({
+                id: 1001,
+                name: 'John Smith',
+                mobile: '+1-555-123-4567',
+                email: 'john.smith@example.com',
+                amount: 2450,
+                password: 'customer123',
+                status: 'Active',
+                joinDate: 'January 15, 2022',
+                address: '123 Main Street, New York, NY 10001',
+                passport: null
+            });
+            
+            customers.push({
+                id: 1002,
+                name: 'Sarah Johnson',
+                mobile: '+1-555-987-6543',
+                email: 'sarah.j@example.com',
+                amount: 1850,
+                password: 'customer123',
+                status: 'Active',
+                joinDate: 'March 22, 2021',
+                address: '456 Oak Avenue, Los Angeles, CA 90001',
+                passport: null
+            });
+            
+            customers.push({
+                id: 1003,
+                name: 'Robert Williams',
+                mobile: '+1-555-456-7890',
+                email: 'robert.w@example.com',
+                amount: 3200,
+                password: 'customer123',
+                status: 'Inactive',
+                joinDate: 'July 10, 2020',
+                address: '789 Pine Road, Chicago, IL 60601',
+                passport: null
+            });
+            
+            // Generate remaining customers
+            for (let i = 1; i <= 0; i++) {
+                const firstName = firstNames[Math.floor(Math.random() * firstNames.length)];
+                const lastName = lastNames[Math.floor(Math.random() * lastNames.length)];
+                const domain = domains[Math.floor(Math.random() * domains.length)];
+                
+                customers.push({
+                    id: i,
+                    name: `${firstName} ${lastName}`,
+                    mobile: `+1-${Math.floor(100 + Math.random() * 900)}-${Math.floor(100 + Math.random() * 900)}-${Math.floor(1000 + Math.random() * 1000)}`,
+                    email: `${firstName.toLowerCase()}.${lastName.toLowerCase()}@${domain}`,
+                    amount: Math.floor(100 + Math.random() * 10000),
+                    password: 'customer123',
+                    status: ['Active', 'Inactive', 'Pending'][Math.floor(Math.random() * 3)],
+                    joinDate: new Date(2020 + Math.floor(Math.random() * 4), Math.floor(Math.random() * 12), Math.floor(1 + Math.random() * 28)).toLocaleDateString(),
+                    address: `${Math.floor(100 + Math.random() * 900)} ${['Main', 'Oak', 'Pine', 'Maple', 'Cedar'][Math.floor(Math.random() * 5)]} Street, ${['New York', 'Los Angeles', 'Chicago', 'Houston', 'Phoenix'][Math.floor(Math.random() * 5)]}`,
+                    passport: null
+                });
+            }
+        }
+
+        // Initialize the application
+        document.addEventListener('DOMContentLoaded', function() {
+            generateSampleCustomers();
+            
+            // Login toggle functionality
+            const adminToggle = document.getElementById('adminToggle');
+            const customerToggle = document.getElementById('customerToggle');
+            const adminLoginSection = document.getElementById('adminLoginSection');
+            const customerLoginSection = document.getElementById('customerLoginSection');
+            
+            adminToggle.addEventListener('click', function() {
+                adminToggle.classList.add('active');
+                customerToggle.classList.remove('active');
+                adminLoginSection.style.display = 'flex';
+                customerLoginSection.style.display = 'none';
+            });
+            
+            customerToggle.addEventListener('click', function() {
+                customerToggle.classList.add('active');
+                adminToggle.classList.remove('active');
+                customerLoginSection.style.display = 'flex';
+                adminLoginSection.style.display = 'none';
+            });
+            
+            // Admin login functionality
+            const adminLoginBtn = document.getElementById('adminLoginBtn');
+            const adminPanel = document.getElementById('adminPanel');
+            
+            adminLoginBtn.addEventListener('click', function() {
+                const username = document.getElementById('adminUsername').value;
+                const password = document.getElementById('adminPassword').value;
+                
+                // Simple validation (in a real app, this would check against a database)
+                if (username === 'admin' && password === 'admin123') {
+                    adminLoginSection.style.display = 'none';
+                    adminPanel.style.display = 'flex';
+                    populateCustomerTable();
+                    updateStats();
+                } else {
+                    alert('Invalid admin credentials. Use: admin / admin123');
+                }
+            });
+            
+            // Customer login functionality
+            const customerLoginBtn = document.getElementById('customerLoginBtn');
+            const customerPanel = document.getElementById('customerPanel');
+            
+            customerLoginBtn.addEventListener('click', function() {
+                const customerId = parseInt(document.getElementById('customerId').value);
+                const password = document.getElementById('customerPassword').value;
+                
+                const customer = customers.find(c => c.id === customerId && c.password === password);
+                
+                if (customer) {
+                    currentUser = customer;
+                    customerLoginSection.style.display = 'none';
+                    customerPanel.style.display = 'flex';
+                    displayCustomerInfo(customer);
+                } else {
+                    alert('Invalid customer credentials. Try ID: 1001 and password: customer123');
+                }
+            });
+            
+            // Logout functionality
+            document.getElementById('adminLogoutBtn').addEventListener('click', function() {
+                adminPanel.style.display = 'none';
+                adminLoginSection.style.display = 'flex';
+                document.getElementById('adminUsername').value = '';
+                document.getElementById('adminPassword').value = '';
+            });
+            
+            document.getElementById('customerLogoutBtn').addEventListener('click', function() {
+                customerPanel.style.display = 'none';
+                customerLoginSection.style.display = 'flex';
+                document.getElementById('customerId').value = '';
+                document.getElementById('customerPassword').value = '';
+                currentUser = null;
+            });
+            
+            // Modal functionality
+            const customerModal = document.getElementById('customerModal');
+            const changePasswordModal = document.getElementById('changePasswordModal');
+            const uploadPassportModal = document.getElementById('uploadPassportModal');
+            const forgotPasswordModal = document.getElementById('forgotPasswordModal');
+            
+            const addCustomerBtn = document.getElementById('addCustomerBtn');
+            const closeModalBtn = document.getElementById('closeModal');
+            const cancelBtn = document.getElementById('cancelBtn');
+            const saveCustomerBtn = document.getElementById('saveCustomerBtn');
+            const searchInput = document.getElementById('searchInput');
+            
+            const changePasswordBtn = document.getElementById('changePasswordBtn');
+            const closeChangePasswordModal = document.getElementById('closeChangePasswordModal');
+            const cancelChangePasswordBtn = document.getElementById('cancelChangePasswordBtn');
+            const savePasswordBtn = document.getElementById('savePasswordBtn');
+            
+            const uploadPassportBtn = document.getElementById('uploadPassportBtn');
+            const closeUploadPassportModal = document.getElementById('closeUploadPassportModal');
+            const cancelUploadPassportBtn = document.getElementById('cancelUploadPassportBtn');
+            const uploadPassportBtnModal = document.getElementById('uploadPassportBtnModal');
+            
+            const adminForgotPassword = document.getElementById('adminForgotPassword');
+            const customerForgotPassword = document.getElementById('customerForgotPassword');
+            const closeForgotPasswordModal = document.getElementById('closeForgotPasswordModal');
+            const cancelForgotPasswordBtn = document.getElementById('cancelForgotPasswordBtn');
+            const submitForgotPasswordBtn = document.getElementById('submitForgotPasswordBtn');
+            
+            const editProfileBtn = document.getElementById('editProfileBtn');
+            
+            // Open add customer modal
+            addCustomerBtn.addEventListener('click', function() {
+                document.getElementById('modalTitle').textContent = 'Add Customer';
+                document.getElementById('customerForm').reset();
+                customerModal.style.display = 'flex';
+            });
+            
+            // Open edit profile modal for customer
+            editProfileBtn.addEventListener('click', function() {
+                if (currentUser) {
+                    document.getElementById('modalTitle').textContent = 'Edit Profile';
+                    document.getElementById('customerName').value = currentUser.name;
+                    document.getElementById('customerMobile').value = currentUser.mobile;
+                    document.getElementById('customerEmail').value = currentUser.email;
+                    document.getElementById('customerAmount').value = currentUser.amount;
+                    document.getElementById('customerPassword').value = currentUser.password;
+                    document.getElementById('customerStatus').value = currentUser.status;
+                    document.getElementById('customerAddress').value = currentUser.address || '';
+                    customerModal.style.display = 'flex';
+                    
+                    // Update save button to handle customer profile update
+                    const saveBtn = document.getElementById('saveCustomerBtn');
+                    saveBtn.onclick = function() {
+                        currentUser.name = document.getElementById('customerName').value;
+                        currentUser.mobile = document.getElementById('customerMobile').value;
+                        currentUser.email = document.getElementById('customerEmail').value;
+                        currentUser.amount = parseInt(document.getElementById('customerAmount').value);
+                        currentUser.password = document.getElementById('customerPassword').value;
+                        currentUser.status = document.getElementById('customerStatus').value;
+                        currentUser.address = document.getElementById('customerAddress').value;
+                        
+                        // Update the customer in the main array
+                        const index = customers.findIndex(c => c.id === currentUser.id);
+                        if (index !== -1) {
+                            customers[index] = currentUser;
+                        }
+                        
+                        alert('Profile updated successfully!');
+                        customerModal.style.display = 'none';
+                        displayCustomerInfo(currentUser);
+                        
+                        // Reset save button functionality
+                        saveBtn.onclick = saveCustomerHandler;
+                    };
+                }
+            });
+            
+            // Close modals
+            closeModalBtn.addEventListener('click', function() {
+                customerModal.style.display = 'none';
+                // Reset save button functionality
+                document.getElementById('saveCustomerBtn').onclick = saveCustomerHandler;
+            });
+            
+            cancelBtn.addEventListener('click', function() {
+                customerModal.style.display = 'none';
+                // Reset save button functionality
+                document.getElementById('saveCustomerBtn').onclick = saveCustomerHandler;
+            });
+            
+            // Save customer handler
+            function saveCustomerHandler() {
+                const name = document.getElementById('customerName').value;
+                const mobile = document.getElementById('customerMobile').value;
+                const email = document.getElementById('customerEmail').value;
+                const amount = document.getElementById('customerAmount').value;
+                const password = document.getElementById('customerPassword').value;
+                const status = document.getElementById('customerStatus').value;
+                const address = document.getElementById('customerAddress').value;
+                
+                if (name && mobile && email && amount && password) {
+                    // In a real app, this would save to a database
+                    const newId = customers.length > 0 ? Math.max(...customers.map(c => c.id)) + 1 : 1001;
+                    customers.push({
+                        id: newId,
+                        name,
+                        mobile,
+                        email,
+                        amount: parseInt(amount),
+                        password,
+                        status,
+                        joinDate: new Date().toLocaleDateString(),
+                        address
+                    });
+                    
+                    alert('Customer saved successfully!');
+                    customerModal.style.display = 'none';
+                    // Refresh the table
+                    populateCustomerTable();
+                    updateStats();
+                } else {
+                    alert('Please fill in all required fields');
+                }
+            }
+            
+            // Set initial save handler
+            saveCustomerBtn.onclick = saveCustomerHandler;
+            
+            // Change password functionality
+            changePasswordBtn.addEventListener('click', function() {
+                changePasswordModal.style.display = 'flex';
+            });
+            
+            closeChangePasswordModal.addEventListener('click', function() {
+                changePasswordModal.style.display = 'none';
+                document.getElementById('changePasswordForm').reset();
+            });
+            
+            cancelChangePasswordBtn.addEventListener('click', function() {
+                changePasswordModal.style.display = 'none';
+                document.getElementById('changePasswordForm').reset();
+            });
+            
+            savePasswordBtn.addEventListener('click', function() {
+                const currentPassword = document.getElementById('currentPassword').value;
+                const newPassword = document.getElementById('newPassword').value;
+                const confirmPassword = document.getElementById('confirmPassword').value;
+                
+                if (!currentPassword || !newPassword || !confirmPassword) {
+                    alert('Please fill in all fields');
+                    return;
+                }
+                
+                if (newPassword !== confirmPassword) {
+                    alert('New passwords do not match');
+                    return;
+                }
+                
+                if (currentUser && currentUser.password !== currentPassword) {
+                    alert('Current password is incorrect');
+                    return;
+                }
+                
+                // Update password
+                if (currentUser) {
+                    currentUser.password = newPassword;
+                    
+                    // Update the customer in the main array
+                    const index = customers.findIndex(c => c.id === currentUser.id);
+                    if (index !== -1) {
+                        customers[index].password = newPassword;
+                    }
+                }
+                
+                alert('Password changed successfully!');
+                changePasswordModal.style.display = 'none';
+                document.getElementById('changePasswordForm').reset();
+            });
+            
+            // Upload passport functionality
+            uploadPassportBtn.addEventListener('click', function() {
+                // Show current passport if exists
+                if (currentUser && currentUser.passport) {
+                    document.getElementById('passportPreview').src = currentUser.passport;
+                    document.getElementById('passportPreview').style.display = 'block';
+                    document.getElementById('noPassportText').style.display = 'none';
+                } else {
+                    document.getElementById('passportPreview').style.display = 'none';
+                    document.getElementById('noPassportText').style.display = 'block';
+                }
+                
+                uploadPassportModal.style.display = 'flex';
+            });
+            
+            closeUploadPassportModal.addEventListener('click', function() {
+                uploadPassportModal.style.display = 'none';
+                document.getElementById('uploadPassportForm').reset();
+            });
+            
+            cancelUploadPassportBtn.addEventListener('click', function() {
+                uploadPassportModal.style.display = 'none';
+                document.getElementById('uploadPassportForm').reset();
+            });
+            
+            // Handle passport file selection
+            document.getElementById('passportFile').addEventListener('change', function(e) {
+                const file = e.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        document.getElementById('passportPreview').src = e.target.result;
+                        document.getElementById('passportPreview').style.display = 'block';
+                        document.getElementById('noPassportText').style.display = 'none';
+                    };
+                    reader.readAsDataURL(file);
+                }
+            });
+            
+            uploadPassportBtnModal.addEventListener('click', function() {
+                const fileInput = document.getElementById('passportFile');
+                if (fileInput.files.length === 0) {
+                    alert('Please select a passport image');
+                    return;
+                }
+                
+                const file = fileInput.files[0];
+                const reader = new FileReader();
+                
+                reader.onload = function(e) {
+                    if (currentUser) {
+                        currentUser.passport = e.target.result;
+                        
+                        // Update the customer in the main array
+                        const index = customers.findIndex(c => c.id === currentUser.id);
+                        if (index !== -1) {
+                            customers[index].passport = e.target.result;
+                        }
+                    }
+                    
+                    alert('Passport uploaded successfully!');
+                    uploadPassportModal.style.display = 'none';
+                    document.getElementById('uploadPassportForm').reset();
+                };
+                
+                reader.readAsDataURL(file);
+            });
+            
+            // Forgot password functionality
+            adminForgotPassword.addEventListener('click', function(e) {
+                e.preventDefault();
+                isAdminForgotPassword = true;
+                document.getElementById('forgotPasswordTitle').textContent = 'Admin Forgot Password';
+                document.getElementById('forgotPasswordLabel').textContent = 'Enter your admin email address';
+                forgotPasswordModal.style.display = 'flex';
+            });
+            
+            customerForgotPassword.addEventListener('click', function(e) {
+                e.preventDefault();
+                isAdminForgotPassword = false;
+                document.getElementById('forgotPasswordTitle').textContent = 'Customer Forgot Password';
+                document.getElementById('forgotPasswordLabel').textContent = 'Enter your customer ID or email address';
+                forgotPasswordModal.style.display = 'flex';
+            });
+            
+            closeForgotPasswordModal.addEventListener('click', function() {
+                forgotPasswordModal.style.display = 'none';
+                document.getElementById('forgotPasswordForm').reset();
+            });
+            
+            cancelForgotPasswordBtn.addEventListener('click', function() {
+                forgotPasswordModal.style.display = 'none';
+                document.getElementById('forgotPasswordForm').reset();
+            });
+            
+            submitForgotPasswordBtn.addEventListener('click', function() {
+                const input = document.getElementById('forgotPasswordInput').value;
+                
+                if (!input) {
+                    alert('Please enter your email address or customer ID');
+                    return;
+                }
+                
+                if (isAdminForgotPassword) {
+                    // In a real app, this would send a password reset email
+                    alert('Password reset instructions have been sent to your email address.');
+                } else {
+                    // Check if input is a customer ID or email
+                    let customer = null;
+                    if (!isNaN(input)) {
+                        customer = customers.find(c => c.id === parseInt(input));
+                    } else {
+                        customer = customers.find(c => c.email === input);
+                    }
+                    
+                    if (customer) {
+                        // In a real app, this would send a password reset email
+                        alert(`Password reset instructions have been sent to ${customer.email}`);
+                    } else {
+                        alert('No customer found with the provided ID or email address');
+                    }
+                }
+                
+                forgotPasswordModal.style.display = 'none';
+                document.getElementById('forgotPasswordForm').reset();
+            });
+            
+            // Search functionality
+            searchInput.addEventListener('input', function() {
+                populateCustomerTable();
+            });
+            
+            // Export to Notepad
+            document.getElementById('exportNotepadBtn').addEventListener('click', function() {
+                exportToFile('txt');
+            });
+            
+            // Export to Excel
+            document.getElementById('exportExcelBtn').addEventListener('click', function() {
+                exportToFile('xlsx');
+            });
+        });
+        
+        // Populate customer table
+        function populateCustomerTable() {
+            const tableBody = document.getElementById('customerTableBody');
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            
+            // Filter customers based on search term
+            let filteredCustomers = customers;
+            if (searchTerm) {
+                filteredCustomers = customers.filter(customer => 
+                    customer.name.toLowerCase().includes(searchTerm) ||
+                    customer.mobile.includes(searchTerm) ||
+                    customer.email.toLowerCase().includes(searchTerm) ||
+                    customer.id.toString().includes(searchTerm)
+                );
+            }
+            
+            // Display first 10 customers (for demo purposes)
+            const displayCustomers = filteredCustomers.slice(0, 10);
+            
+            tableBody.innerHTML = '';
+            
+            displayCustomers.forEach(customer => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${customer.id}</td>
+                    <td>${customer.name}</td>
+                    <td>${customer.mobile}</td>
+                    <td>${customer.email}</td>
+                    <td>$${customer.amount}</td>
+                    <td><span class="status-badge status-${customer.status.toLowerCase()}">${customer.status}</span></td>
+                    <td class="action-cell">
+                        <button class="action-btn btn-view" onclick="viewCustomer(${customer.id})">
+                            <i class="fas fa-eye"></i> View
+                        </button>
+                        <button class="action-btn btn-edit" onclick="editCustomer(${customer.id})">
+                            <i class="fas fa-edit"></i> Edit
+                        </button>
+                        <button class="action-btn btn-delete" onclick="deleteCustomer(${customer.id})">
+                            <i class="fas fa-trash"></i> Delete
+                        </button>
+                    </td>
+                `;
+                tableBody.appendChild(row);
+            });
+            
+            // Update pagination info
+            document.getElementById('startRecord').textContent = 1;
+            document.getElementById('endRecord').textContent = displayCustomers.length;
+            document.getElementById('totalRecords').textContent = filteredCustomers.length.toLocaleString();
+        }
+        
+        // Update stats cards
+        function updateStats() {
+            const totalCustomers = customers.length;
+            const totalAmount = customers.reduce((sum, customer) => sum + customer.amount, 0);
+            const activeCustomers = customers.filter(customer => customer.status === 'Active').length;
+            const newCustomers = Math.floor(totalCustomers * 0.03); // 3% of total as new this month
+            
+            document.getElementById('totalCustomers').textContent = totalCustomers.toLocaleString();
+            document.getElementById('totalAmount').textContent = `$${totalAmount.toLocaleString()}`;
+            document.getElementById('activeCustomers').textContent = activeCustomers.toLocaleString();
+            document.getElementById('newCustomers').textContent = newCustomers.toLocaleString();
+        }
+        
+        // Display customer information in customer panel
+        function displayCustomerInfo(customer) {
+            document.getElementById('custId').textContent = customer.id;
+            document.getElementById('custName').textContent = customer.name;
+            document.getElementById('custMobile').textContent = customer.mobile;
+            document.getElementById('custEmail').textContent = customer.email;
+            document.getElementById('custAmount').textContent = `$${customer.amount}`;
+            document.getElementById('custStatus').textContent = customer.status;
+            document.getElementById('custJoinDate').textContent = customer.joinDate;
+            document.getElementById('custLastLogin').textContent = new Date().toLocaleString();
+        }
+        
+        // View customer details
+        function viewCustomer(id) {
+            const customer = customers.find(c => c.id === id);
+            if (customer) {
+                alert(`Customer Details:\n\nID: ${customer.id}\nName: ${customer.name}\nMobile: ${customer.mobile}\nEmail: ${customer.email}\nAmount: $${customer.amount}\nStatus: ${customer.status}\nJoin Date: ${customer.joinDate}\nAddress: ${customer.address || 'N/A'}`);
+            }
+        }
+        
+        // Edit customer
+        function editCustomer(id) {
+            const customer = customers.find(c => c.id === id);
+            if (customer) {
+                document.getElementById('modalTitle').textContent = 'Edit Customer';
+                document.getElementById('customerName').value = customer.name;
+                document.getElementById('customerMobile').value = customer.mobile;
+                document.getElementById('customerEmail').value = customer.email;
+                document.getElementById('customerAmount').value = customer.amount;
+                document.getElementById('customerPassword').value = customer.password;
+                document.getElementById('customerStatus').value = customer.status;
+                document.getElementById('customerAddress').value = customer.address || '';
+                document.getElementById('customerModal').style.display = 'flex';
+                
+                // Update save button to handle edit
+                const saveBtn = document.getElementById('saveCustomerBtn');
+                saveBtn.onclick = function() {
+                    customer.name = document.getElementById('customerName').value;
+                    customer.mobile = document.getElementById('customerMobile').value;
+                    customer.email = document.getElementById('customerEmail').value;
+                    customer.amount = parseInt(document.getElementById('customerAmount').value);
+                    customer.password = document.getElementById('customerPassword').value;
+                    customer.status = document.getElementById('customerStatus').value;
+                    customer.address = document.getElementById('customerAddress').value;
+                    
+                    alert('Customer updated successfully!');
+                    document.getElementById('customerModal').style.display = 'none';
+                    populateCustomerTable();
+                    updateStats();
+                    
+                    // Reset save button functionality
+                    saveBtn.onclick = saveCustomerHandler;
+                };
+            }
+        }
+        
+        // Delete customer
+        function deleteCustomer(id) {
+            if (confirm('Are you sure you want to delete this customer?')) {
+                customers = customers.filter(customer => customer.id !== id);
+                populateCustomerTable();
+                updateStats();
+                alert('Customer deleted successfully!');
+            }
+        }
+        
+        // Export data to file
+        function exportToFile(format) {
+            let content = '';
+            const filename = `customers_${new Date().toISOString().split('T')[0]}`;
+            
+            if (format === 'txt') {
+                content = 'Customer ID\tName\tMobile\tEmail\tAmount\tStatus\n';
+                customers.forEach(customer => {
+                    content += `${customer.id}\t${customer.name}\t${customer.mobile}\t${customer.email}\t$${customer.amount}\t${customer.status}\n`;
+                });
+                
+                // In a real app, this would trigger a download
+                alert('Data exported to Notepad format!');
+            } else if (format === 'xlsx') {
+                // In a real app, this would use a library like SheetJS to create an Excel file
+                alert('Data exported to Excel format!');
+            }
+        }
+    </script>
+</body>
+</html>
